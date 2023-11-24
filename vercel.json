@@ -1,0 +1,7 @@
+{
+    "framework": "vite",
+    "installCommand": "yarn install",
+    "github": {
+        "silent": true
+    }
+}

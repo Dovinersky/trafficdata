@@ -1,0 +1,36 @@
+.uikit-buttons-group {
+    padding: 4px;
+    display: flex;
+
+    border-radius: 4px;
+
+    background-color: hsl(0, 0%, 100%);
+
+    .uikit-button {
+        padding-inline: 4px;
+        min-width: 36px;
+        height: 100%;
+
+        svg > * {
+            color: hsl(var(--black));
+            fill: hsl(var(--black));
+        }
+
+        &.active svg > * {
+            fill: hsl(var(--red));
+        }
+
+        .tooltip {
+            width: 100%;
+            height: 100%;
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+    }
+
+    .uikit-button:not(:first-child) {
+        border-left: 1px solid hsl(var(--grey), 0.18);
+    }
+}

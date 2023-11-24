@@ -1,0 +1,115 @@
+.traffic-card {
+    border-radius: 4px;
+    box-shadow: 0px 4px 4px hsl(0, 0%, 0%, 0.25);
+    background-color: hsl(0, 0%, 100%);
+}
+
+.traffic-card__header {
+    padding: 8px;
+
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    .tooltip {
+        vertical-align: middle;
+    }
+}
+
+.traffic-card__status-wrapper {
+    display: flex;
+    align-items: center;
+}
+
+.traffic-card__status {
+    fill: hsl(var(--green));
+
+    &.active > * {
+        fill: hsl(var(--green));
+    }
+    &.inactive > * {
+        fill: hsl(var(--grey));
+    }
+    &.unconfigured > * {
+        fill: hsl(var(--light-grey));
+    }
+    &.error > * {
+        fill: hsl(var(--red));
+    }
+}
+
+.traffic-card__place {
+    flex-grow: 1;
+}
+
+.traffic-card__preview {
+    aspect-ratio: 1.8;
+
+    display: grid;
+    grid-template-areas: "stack";
+
+    background-color: hsl(var(--black));
+}
+
+.traffic-card__preview-picture {
+    width: 100%;
+    height: 100%;
+    aspect-ratio: 1.8; // duplicate required for chrome
+
+    object-fit: cover;
+    grid-area: stack;
+}
+
+.traffic-card__preview-selection {
+    padding: 8px;
+
+    align-self: end;
+    grid-area: stack;
+
+    display: flex;
+    gap: 4px;
+
+    .uikit-button {
+        padding: 4px 8px;
+
+        color: hsl(0, 0%, 100%);
+        font-size: 14px;
+
+        background-color: hsl(0, 0%, 0%, 0.55);
+
+        border-radius: 4px;
+
+        &.active {
+            background-color: hsl(var(--red));
+        }
+    }
+}
+
+.traffic-card__no-camera {
+    place-self: center;
+    grid-area: stack;
+}
+
+.traffic-card__navigation {
+    margin-inline: auto;
+
+    min-height: 52px;
+
+    display: flex;
+    gap: 48px;
+    justify-content: center;
+    align-items: center;
+}
+
+.traffic-card__cameras {
+    padding: 8px 16px;
+
+    display: grid;
+    grid-template-columns: 1fr min-content;
+    grid-auto-rows: 32px;
+    justify-content: space-between;
+    align-items: center;
+    gap: 4px;
+
+    border-top: 1px solid hsl(var(--light-grey), 0.5);
+}

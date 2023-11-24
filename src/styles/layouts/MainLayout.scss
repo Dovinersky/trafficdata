@@ -1,0 +1,24 @@
+.main-layout {
+    height: 100vh;
+    height: 100dvh;
+
+    display: grid;
+    grid-template-areas: "sidebar" "content";
+    align-content: start;
+}
+
+.header {
+    grid-area: sidebar;
+}
+
+.content {
+    grid-area: content;
+}
+
+@media (width > 768px) {
+    .main-layout {
+        grid-template-areas: "sidebar content";
+        grid-template-columns: 60px auto;
+        align-content: unset;
+    }
+}

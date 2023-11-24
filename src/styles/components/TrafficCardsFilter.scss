@@ -1,0 +1,15 @@
+.traffic-cards-filter {
+    // max-width: max(300px, 40%);
+
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+
+    > .uikit-text-input {
+        min-width: 64px;
+        max-width: 400px;
+    }
+
+    > .uikit-buttons-group {
+    }
+}

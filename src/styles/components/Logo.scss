@@ -1,0 +1,30 @@
+.logo {
+    display: grid;
+    grid-template-areas: "stack";
+    width: fit-content;
+    height: fit-content;
+
+    > * {
+        grid-area: stack;
+    }
+
+    // .logo-ring {
+    //     animation-duration: 2s;
+    //     animation-timing-function: cubic-bezier(0.235, 0.860, 0.170, 0.710);
+    //     animation-name: rotate;
+    //     animation-iteration-count: infinite;
+    // }
+
+    .logo-car {
+        place-self: center;
+    }
+}
+
+// @keyframes rotate {
+//     from {
+//         transform: rotate(0deg);
+//     }
+//     to {
+//         transform: rotate(360deg);
+//     }
+// }
