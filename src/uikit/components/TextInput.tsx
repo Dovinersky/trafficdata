@@ -1,10 +1,7 @@
 import { joinClasses } from "@/utils/classesJoiner";
 import "../styles/TextInput.scss";
 
-type TextInputProps = React.DetailedHTMLProps<
-    React.InputHTMLAttributes<HTMLInputElement>,
-    HTMLInputElement
->;
+type TextInputProps = React.ComponentProps<"input">;
 
 const TextInput = (props: TextInputProps) => {
     return (

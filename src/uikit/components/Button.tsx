@@ -1,10 +1,7 @@
 import { joinClasses } from "@/utils/classesJoiner";
 import "../styles/Button.scss";
 
-type ButtonProps = React.DetailedHTMLProps<
-    React.ButtonHTMLAttributes<HTMLButtonElement>,
-    HTMLButtonElement
->;
+type ButtonProps = React.ComponentProps<"button">;
 
 const Button = (props: ButtonProps) => {
     return (
