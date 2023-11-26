@@ -1,15 +1,26 @@
 import { joinClasses } from "@/utils/classesJoiner";
 import "../styles/TextInput.scss";
 
-type TextInputProps = React.ComponentProps<"input">;
+type TextInputProps = React.ComponentProps<"input"> & {
+    inputPrefix?: React.ReactNode;
+    inputSuffix?: React.ReactNode;
+};
 
-const TextInput = (props: TextInputProps) => {
+const TextInput = ({ inputPrefix, inputSuffix, ...props }: TextInputProps) => {
     return (
-        <input
-            {...props}
-            type="text"
-            className={joinClasses("uikit-text-input", props.className)}
-        />
+        <span className="uikit-text-input-wrapper">
+            {inputPrefix && (
+                <span className="uikit-text-input__prefix">{inputPrefix}</span>
+            )}
+            <input
+                {...props}
+                type="text"
+                className={joinClasses("uikit-text-input", props.className)}
+            />
+            {inputSuffix && (
+                <span className="uikit-text-input__suffix">{inputSuffix}</span>
+            )}
+        </span>
     );
 };
 

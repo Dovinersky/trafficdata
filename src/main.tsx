@@ -6,7 +6,7 @@ import Home from "@/pages/Home";
 import Tables from "@/pages/Tables";
 import "@/styles/defaults.scss";
 import "@/styles/globals.scss";
-import { createContext } from "react";
+import React, { createContext } from "react";
 import ReactDOM from "react-dom/client";
 import { Outlet, RouterProvider, createBrowserRouter } from "react-router-dom";
 import generateData from "./utils/dataGenerator";
@@ -37,9 +37,9 @@ const data = generateData();
 export const DataContext = createContext(data);
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
-    // <React.StrictMode>
-    <DataContext.Provider value={data}>
-        <RouterProvider router={router} />
-    </DataContext.Provider>
-    // </React.StrictMode>
+    <React.StrictMode>
+        <DataContext.Provider value={data}>
+            <RouterProvider router={router} />
+        </DataContext.Provider>
+    </React.StrictMode>
 );

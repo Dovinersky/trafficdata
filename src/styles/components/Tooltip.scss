@@ -27,7 +27,7 @@
         transform: translateY(-50%) scale(0);
     }
 
-    &::after {
+    &:not(.inactive):after {
         content: attr(data-tooltip);
 
         padding-inline: 8px;

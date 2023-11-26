@@ -86,12 +86,18 @@ const CAMERA_STATUSES: Array<CameraStatuses> = ["handle", "idle"];
 
 // Generator functions
 const getRandomCamera = (id: number): Camera => {
-    return {
+    const camera: Camera = {
         id,
         name: `Камера ${id + 1}`,
         status: getRandomArrayElement(CAMERA_STATUSES),
-        picture: getRandomArrayElement(CAMERA_PICTURE_URLS),
     };
+
+    // Chance 1 of 5 the camera does not have picture
+    if (getRandomInteger(5) < 4) {
+        camera.picture = getRandomArrayElement(CAMERA_PICTURE_URLS);
+    }
+
+    return camera;
 };
 
 const getRandomCamerasArray = (min: number, max: number): Array<Camera> => {

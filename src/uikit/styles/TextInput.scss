@@ -1,13 +1,32 @@
-.uikit-text-input {
-    padding: 8px 12px;
+.uikit-text-input-wrapper {
+    padding: 8px 8px;
     width: 100%;
+
+    display: flex;
+    justify-content: center;
+    gap: 12px;
 
     background-color: hsl(0, 0%, 100%);
 
     border: 0;
     border-radius: 4px;
 
-    &:focus {
+    &:focus-within {
         outline: 2px solid hsl(var(--red));
+    }
+}
+
+.uikit-text-input__prefix,
+.uikit-text-input__suffix {
+    display: flex;
+}
+
+.uikit-text-input {
+    flex-grow: 1;
+    background-color: transparent;
+    border: 0;
+
+    &:focus {
+        outline: 0;
     }
 }

@@ -1,29 +1,42 @@
 import "@/styles/components/TrafficCardsFilter.scss";
-import { Border, Error, Pause, Play, SettingsAlerted } from "@/svg/svghub";
+import {
+    Border,
+    Error,
+    Pause,
+    Play,
+    Search,
+    SettingsAlerted,
+} from "@/svg/svghub";
 import { TrafficObjectStatuses } from "@/types/types";
 import ButtonsGroup from "@/uikit/components/ButtonsGroup";
 import TextInput from "@/uikit/components/TextInput";
-import { useState } from "react";
+import { debounce } from "@/utils/debounce";
+import { useCallback, useEffect, useReducer, useRef } from "react";
 import Tooltip from "./Tooltip";
 
 type TrafficCardFilterProps = {
-    filterChanged?: (filter: FilterType) => void;
+    filterChanged: (filter: FilterType) => void;
 };
 
-type StatusOptionsType = TrafficObjectStatuses | "all";
-
-type FilterStatusType = {
-    statusType: StatusOptionsType;
-    tooltip: string;
-    icon: JSX.Element;
-};
+type FilterStatusOptionsType = TrafficObjectStatuses | "all";
 
 export type FilterType = {
     queryString: string;
-    selectedStatus: StatusOptionsType;
+    selectedStatus: FilterStatusOptionsType;
 };
 
-const statuses: Array<FilterStatusType> = [
+type FilterActions =
+    | {
+          type: "changeString";
+          payload: string;
+      }
+    | { type: "changeStatus"; payload: FilterStatusOptionsType };
+
+const statusButtonsData: Array<{
+    statusType: FilterStatusOptionsType;
+    tooltip: string;
+    icon: JSX.Element;
+}> = [
     { statusType: "active", tooltip: "В обработке", icon: <Play /> },
     { statusType: "inactive", tooltip: "Не активны", icon: <Pause /> },
     { statusType: "error", tooltip: "Ошибка", icon: <Error /> },
@@ -36,43 +49,71 @@ const statuses: Array<FilterStatusType> = [
 ];
 
 const TrafficCardsFilter = ({ filterChanged }: TrafficCardFilterProps) => {
-    const [queryString, setQueryString] = useState("");
-    const [selectedStatus, setSelectedStatus] =
-        useState<StatusOptionsType>("all");
+    const debouncedFilterChangedTimeoutId = useRef<number>(-1);
+    const [filter, dispatchFilter] = useReducer<
+        (state: FilterType, action: FilterActions) => FilterType
+    >(
+        (state, action) => {
+            let newState: FilterType = { ...state };
 
-    const textInputChangeHandler = (value: string) => {
-        setQueryString(value);
-        if (filterChanged)
-            filterChanged({
-                queryString: value,
-                selectedStatus,
-            });
-    };
+            switch (action.type) {
+                case "changeString":
+                    newState.queryString = action.payload;
+                    break;
+                case "changeStatus":
+                    newState.selectedStatus = action.payload;
+                    break;
+                default:
+                    action satisfies never;
+                    return state;
+            }
 
-    const statusSelectionChangeHandler = (value: StatusOptionsType) => {
-        setSelectedStatus(value);
-        if (filterChanged)
-            filterChanged({ queryString, selectedStatus: value });
-    };
+            return newState;
+        },
+        {
+            queryString: "",
+            selectedStatus: "all",
+        }
+    );
+
+    useEffect(() => {
+        debouncedFilterChangedTimeoutId.current =
+            debouncedFilterChanged(filter);
+    }, [filter.queryString]);
+
+    useEffect(() => {
+        clearTimeout(debouncedFilterChangedTimeoutId.current);
+        filterChanged(filter);
+    }, [filter.selectedStatus]);
+
+    const debouncedFilterChanged = useCallback(
+        debounce(filterChanged, 300),
+        []
+    );
 
     return (
         <div className="traffic-cards-filter">
             <TextInput
-                value={queryString}
+                value={filter.queryString}
                 onChange={(event) => {
-                    textInputChangeHandler(event.currentTarget.value);
+                    dispatchFilter({
+                        type: "changeString",
+                        payload: event.currentTarget.value,
+                    });
                 }}
                 placeholder="Поиск объекта"
+                inputPrefix={<Search />}
             />
             <ButtonsGroup
-                onChange={(selectedIndex) =>
-                    statusSelectionChangeHandler(
-                        statuses[selectedIndex].statusType
-                    )
-                }
-                buttonsContent={statuses.map((status) => (
-                    <Tooltip key={status.statusType} tooltip={status.tooltip}>
-                        {status.icon}
+                onChange={(selectedIndex) => {
+                    dispatchFilter({
+                        type: "changeStatus",
+                        payload: statusButtonsData[selectedIndex].statusType,
+                    });
+                }}
+                buttonsContent={statusButtonsData.map((data) => (
+                    <Tooltip key={data.statusType} tooltip={data.tooltip}>
+                        {data.icon}
                     </Tooltip>
                 ))}
             />

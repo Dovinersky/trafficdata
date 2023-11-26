@@ -9,7 +9,7 @@ export type Camera = {
     id: number;
     name: string;
     status: CameraStatuses;
-    picture: string;
+    picture?: string;
 };
 
 export type TrafficObjectStatuses =

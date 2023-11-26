@@ -7,6 +7,7 @@ type TooltipProps = {
     tooltip: React.ReactNode;
     position?: "top" | "bottom" | "left" | "right";
     children?: React.ReactNode;
+    inactive?: boolean;
 };
 
 const Tooltip = ({
@@ -14,10 +15,16 @@ const Tooltip = ({
     tooltip,
     position = "bottom",
     children,
+    inactive,
 }: TooltipProps) => {
     return (
         <span
-            className={joinClasses("tooltip", `tooltip-${position}`, className)}
+            className={joinClasses(
+                "tooltip",
+                `tooltip-${position}`,
+                inactive ? "inactive" : "",
+                className
+            )}
             data-tooltip={tooltip}
         >
             {children}

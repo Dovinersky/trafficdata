@@ -38,10 +38,25 @@ type CameraActionProps = {
     onClick: (newStatus: CameraStatuses, camera: Camera) => void;
 };
 
-type PreviewContentProps = {
+type HeaderProps = {
     trafficObject: TrafficObject;
-    selectedCameraId: number;
-    onChange: (selectedCameraId: number) => void;
+};
+
+type PreviewProps = {
+    trafficObject: TrafficObject;
+};
+
+type NavigationProps = {
+    trafficObject: TrafficObject;
+    overallCameraActionHandler: (newStatus: CameraStatuses) => void;
+};
+
+type CamerasProps = {
+    trafficObject: TrafficObject;
+    cameraActionHandler: (
+        newStatus: CameraStatuses,
+        targetCamera: Camera
+    ) => void;
 };
 
 const trafficObjectStatusesLocalized: {
@@ -57,20 +72,27 @@ const OverallCameraAction = ({
     trafficObject,
     onClick,
 }: OverallCameraActionProps) => {
-    if (trafficObject.status == "unconfigured") return null;
+    let tooltipText: string = "Запустить все";
+    let newStatus: CameraStatuses = "handle";
+    let Icon: FC = Play;
 
-    if (trafficObject.cameras.every((camera) => camera.status == "handle"))
-        return (
-            <Tooltip tooltip="Остановить все">
-                <Button onClick={() => onClick("idle")}>
-                    <Pause />
-                </Button>
-            </Tooltip>
-        );
+    if (trafficObject.cameras.every((camera) => camera.status == "handle")) {
+        tooltipText = "Остановить все";
+        newStatus = "idle";
+        Icon = Pause;
+    }
+
     return (
-        <Tooltip tooltip="Запустить все">
-            <Button onClick={() => onClick("handle")}>
-                <Play />
+        <Tooltip
+            tooltip={tooltipText}
+            inactive={trafficObject.status == "unconfigured"}
+        >
+            <Button
+                className="camera-action-button"
+                onClick={() => onClick(newStatus)}
+                disabled={trafficObject.status == "unconfigured"}
+            >
+                <Icon />
             </Button>
         </Tooltip>
     );
@@ -81,11 +103,7 @@ const CameraAction = ({
     camera,
     onClick,
 }: CameraActionProps) => {
-    if (
-        trafficObject.status == "unconfigured" ||
-        trafficObject.cameras.length == 1
-    )
-        return <span />;
+    if (trafficObject.cameras.length == 1) return <span />;
 
     let Icon: FC;
     let tooltipText: string;
@@ -102,50 +120,126 @@ const CameraAction = ({
     }
 
     return (
-        <Tooltip tooltip={tooltipText} position="left">
-            <Button onClick={() => onClick(newStatus, camera)}>
+        <Tooltip
+            tooltip={tooltipText}
+            position="left"
+            inactive={trafficObject.status == "unconfigured"}
+        >
+            <Button
+                className="camera-action-button"
+                onClick={() => onClick(newStatus, camera)}
+                disabled={trafficObject.status == "unconfigured"}
+            >
                 <Icon />
             </Button>
         </Tooltip>
     );
 };
 
-const PreviewContent = ({
-    trafficObject,
-    selectedCameraId,
-    onChange,
-}: PreviewContentProps) => {
-    if (trafficObject.status == "unconfigured")
-        return <NoCamera className="traffic-card__no-camera" />;
+const Header = ({ trafficObject }: HeaderProps) => {
+    return (
+        <div className="traffic-card__header">
+            <Tooltip
+                tooltip={trafficObjectStatusesLocalized[trafficObject.status]}
+                position="right"
+                className="traffic-card__status-wrapper"
+            >
+                <Car
+                    className={joinClasses(
+                        "traffic-card__status",
+                        trafficObject.status
+                    )}
+                />
+            </Tooltip>
+            <span className="traffic-card__place">{trafficObject.name}</span>
+            <Button className="traffic-card__settings">
+                <Settings />
+            </Button>
+        </div>
+    );
+};
+
+const Preview = ({ trafficObject }: PreviewProps) => {
+    const [selectedCameraId, setSelectedCameraId] = useState(0);
+
+    const Image = trafficObject.cameras[selectedCameraId].picture ? (
+        <img
+            className="traffic-card__preview-picture"
+            src={trafficObject.cameras[selectedCameraId].picture}
+        />
+    ) : (
+        <NoCamera className="traffic-card__no-camera" />
+    );
+
+    const Selection =
+        trafficObject.cameras.length == 1
+            ? null
+            : trafficObject.cameras.map((camera) => (
+                  <Button
+                      key={camera.id}
+                      className={selectedCameraId == camera.id ? "active" : ""}
+                      onClick={() => setSelectedCameraId(camera.id)}
+                  >
+                      {camera.id + 1}
+                  </Button>
+              ));
 
     return (
-        <>
-            <img
-                className="traffic-card__preview-picture"
-                src={trafficObject.cameras[selectedCameraId].picture}
+        <div className="traffic-card__preview">
+            {Image}
+            <div className="traffic-card__preview-selection">{Selection}</div>
+        </div>
+    );
+};
+
+const Navigation = ({
+    trafficObject,
+    overallCameraActionHandler,
+}: NavigationProps) => {
+    return (
+        <div className="traffic-card__navigation">
+            <Tooltip tooltip="Дашборд">
+                <Link to={`/dashboards?id=${trafficObject.id}`}>
+                    <AnalyticsMini />
+                </Link>
+            </Tooltip>
+            <Tooltip tooltip="Таблицы">
+                <Link to={`/tables?id=${trafficObject.id}`}>
+                    <TableMini />
+                </Link>
+            </Tooltip>
+            <Tooltip tooltip="События">
+                <Link to={`/events?id=${trafficObject.id}`}>
+                    <EventBusyMini />
+                </Link>
+            </Tooltip>
+            <OverallCameraAction
+                trafficObject={trafficObject}
+                onClick={overallCameraActionHandler}
             />
-            <div className="traffic-card__preview-selection">
-                {trafficObject.cameras.length == 1
-                    ? null
-                    : trafficObject.cameras.map((camera) => (
-                          <Button
-                              key={camera.id}
-                              className={
-                                  selectedCameraId == camera.id ? "active" : ""
-                              }
-                              onClick={() => onChange(camera.id)}
-                          >
-                              {camera.id + 1}
-                          </Button>
-                      ))}
-            </div>
-        </>
+        </div>
+    );
+};
+
+const Cameras = ({ trafficObject, cameraActionHandler }: CamerasProps) => {
+    return (
+        <div className="traffic-card__cameras">
+            {trafficObject.cameras.map((camera) => (
+                <Fragment key={camera.id}>
+                    <span>{`${camera.name}`}</span>
+                    <CameraAction
+                        trafficObject={trafficObject}
+                        camera={camera}
+                        onClick={cameraActionHandler}
+                    />
+                </Fragment>
+            ))}
+        </div>
     );
 };
 
 const TrafficCard = ({ data: initData }: TrafficCardProps) => {
     const [trafficObject, setTrafficObject] = useState(initData);
-    const [selectedCameraId, setSelectedCameraId] = useState(0);
 
     const overallCameraActionHandler = (newStatus: CameraStatuses) => {
         setTrafficObject({
@@ -170,75 +264,19 @@ const TrafficCard = ({ data: initData }: TrafficCardProps) => {
         });
     };
 
-    const previewSelectorHandler = (selectedCameraId: number) => {
-        setSelectedCameraId(selectedCameraId);
-    };
-
     return (
         <div className="traffic-card__wrapper">
             <div className="traffic-card">
-                <div className="traffic-card__header">
-                    <Tooltip
-                        tooltip={
-                            trafficObjectStatusesLocalized[trafficObject.status]
-                        }
-                        position="right"
-                        className="traffic-card__status-wrapper"
-                    >
-                        <Car
-                            className={joinClasses(
-                                "traffic-card__status",
-                                trafficObject.status
-                            )}
-                        />
-                    </Tooltip>
-                    <span className="traffic-card__place">
-                        {trafficObject.name}
-                    </span>
-                    <Button className="traffic-card__settings">
-                        <Settings />
-                    </Button>
-                </div>
-                <div className="traffic-card__preview">
-                    <PreviewContent
-                        trafficObject={trafficObject}
-                        selectedCameraId={selectedCameraId}
-                        onChange={previewSelectorHandler}
-                    />
-                </div>
-                <div className="traffic-card__navigation">
-                    <Tooltip tooltip="Дашборд">
-                        <Link to={`/dashboards?id=${trafficObject.id}`}>
-                            <AnalyticsMini />
-                        </Link>
-                    </Tooltip>
-                    <Tooltip tooltip="Таблицы">
-                        <Link to={`/tables?id=${trafficObject.id}`}>
-                            <TableMini />
-                        </Link>
-                    </Tooltip>
-                    <Tooltip tooltip="События">
-                        <Link to={`/events?id=${trafficObject.id}`}>
-                            <EventBusyMini />
-                        </Link>
-                    </Tooltip>
-                    <OverallCameraAction
-                        trafficObject={trafficObject}
-                        onClick={overallCameraActionHandler}
-                    />
-                </div>
-                <div className="traffic-card__cameras">
-                    {trafficObject.cameras.map((camera) => (
-                        <Fragment key={camera.id}>
-                            <span>{`${camera.name}`}</span>
-                            <CameraAction
-                                trafficObject={trafficObject}
-                                camera={camera}
-                                onClick={cameraActionHandler}
-                            />
-                        </Fragment>
-                    ))}
-                </div>
+                <Header trafficObject={trafficObject} />
+                <Preview trafficObject={trafficObject} />
+                <Navigation
+                    trafficObject={trafficObject}
+                    overallCameraActionHandler={overallCameraActionHandler}
+                />
+                <Cameras
+                    trafficObject={trafficObject}
+                    cameraActionHandler={cameraActionHandler}
+                />
             </div>
         </div>
     );
