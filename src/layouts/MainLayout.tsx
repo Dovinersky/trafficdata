@@ -1,9 +1,9 @@
 import Header from "@/components/Header";
 import "@/styles/layouts/MainLayout.scss";
 
-interface MainLayoutProps {
+type MainLayoutProps = {
     children: React.ReactNode;
-}
+};
 
 const MainLayout = ({ children }: MainLayoutProps) => {
     return (

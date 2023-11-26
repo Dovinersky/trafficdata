@@ -120,7 +120,7 @@ const specials: Array<TrafficObject> = [
     // Every camera handle
     {
         id: getSpecialTrafficObjectId(),
-        name: `* ${getRandomArrayElement(TRAFFIC_OBJECTS)}`,
+        name: `${getRandomArrayElement(TRAFFIC_OBJECTS)}`,
         status: "active",
         cameras: getRandomCamerasArray(3, 3).map((camera) => {
             camera.status = "handle";
@@ -130,7 +130,7 @@ const specials: Array<TrafficObject> = [
     // Many cameras idle
     {
         id: getSpecialTrafficObjectId(),
-        name: `* ${getRandomArrayElement(TRAFFIC_OBJECTS)}`,
+        name: `${getRandomArrayElement(TRAFFIC_OBJECTS)}`,
         status: "active",
         cameras: getRandomCamerasArray(3, 3).map((camera, index) => {
             if (index == 0) camera.status = "handle";
@@ -141,7 +141,7 @@ const specials: Array<TrafficObject> = [
     // Many cameras handle
     {
         id: getSpecialTrafficObjectId(),
-        name: `* ${getRandomArrayElement(TRAFFIC_OBJECTS)}`,
+        name: `${getRandomArrayElement(TRAFFIC_OBJECTS)}`,
         status: "active",
         cameras: getRandomCamerasArray(3, 3).map((camera, index) => {
             if (index == 0) camera.status = "idle";

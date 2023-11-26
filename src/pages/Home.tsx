@@ -11,9 +11,9 @@ const Home = () => {
     const [filteredData, setFilteredData] = useState(data);
 
     const filterChangeHandler = (filter: FilterType) => {
-        console.log(
-            `query: ${filter.queryString}, status: ${filter.selectedStatus}`
-        );
+        // console.log(
+        //     `query: ${filter.queryString}, status: ${filter.selectedStatus}`
+        // );
 
         const filteredByStatus =
             filter.selectedStatus == "all"
