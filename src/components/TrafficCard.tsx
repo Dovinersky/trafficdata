@@ -11,7 +11,12 @@ import {
     Settings,
     TableMini,
 } from "@/svg/svghub";
-import { Camera, CameraStatuses, TrafficObject } from "@/types/types";
+import {
+    Camera,
+    CameraStatuses,
+    TrafficObject,
+    TrafficObjectStatuses,
+} from "@/types/types";
 import Button from "@/uikit/components/Button";
 import Link from "@/uikit/components/Link";
 import { joinClasses } from "@/utils/classesJoiner";
@@ -37,6 +42,15 @@ type PreviewContentProps = {
     trafficObject: TrafficObject;
     selectedCameraId: number;
     onChange: (selectedCameraId: number) => void;
+};
+
+const trafficObjectStatusesLocalized: {
+    [key in TrafficObjectStatuses]: string;
+} = {
+    active: "Активен",
+    inactive: "Не активен",
+    unconfigured: "Не настроен",
+    error: "Ошибка",
 };
 
 const OverallCameraAction = ({
@@ -165,7 +179,9 @@ const TrafficCard = ({ data: initData }: TrafficCardProps) => {
             <div className="traffic-card">
                 <div className="traffic-card__header">
                     <Tooltip
-                        tooltip={trafficObject.status}
+                        tooltip={
+                            trafficObjectStatusesLocalized[trafficObject.status]
+                        }
                         position="right"
                         className="traffic-card__status-wrapper"
                     >
